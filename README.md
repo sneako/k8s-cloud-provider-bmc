@@ -20,7 +20,8 @@ Please read through the requirements carefully as they are critical to running t
 
 Recommended versions of PhoenixNAP CCM based on your Kubernetes version:
 
-* PhoenixNAP CCM version v1.0.0+ supports Kubernetes version >=1.20.0
+* PhoenixNAP CCM version v1.0.0 supports Kubernetes version >=1.20.0 (built against Kubernetes 1.23 libraries)
+* Later versions are built against Kubernetes 1.37 libraries; run them on current, supported Kubernetes releases
 
 ### Load Balancer
 

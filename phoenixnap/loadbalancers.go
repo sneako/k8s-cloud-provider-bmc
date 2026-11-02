@@ -93,7 +93,7 @@ func newLoadBalancers(ipClient *ipapi.APIClient, tagClient *tagapi.APIClient, ne
 			// get deleted only
 			blocks, err := l.getIPBlocks("", "", false, true)
 			if err != nil {
-				klog.Errorf("unable to retrieve IP blocks: %w", err)
+				klog.Errorf("unable to retrieve IP blocks: %v", err)
 				continue
 			}
 			if len(blocks) == 0 {
@@ -106,14 +106,14 @@ func newLoadBalancers(ipClient *ipapi.APIClient, tagClient *tagapi.APIClient, ne
 					klog.Infof("deleting unassigned block %s", block.Id)
 					// it is unassigned, delete the block
 					if _, _, err := l.ipClient.IPBlocksApi.IpBlocksIpBlockIdDelete(context.Background(), block.Id).Execute(); err != nil {
-						klog.Errorf("unable to delete IP block: %w", err)
+						klog.Errorf("unable to delete IP block: %v", err)
 					}
 				case "unassigning":
 					klog.Infof("block %s still unassigning, waiting", block.Id)
 				default:
 					// unassign it
 					if _, _, err := l.netClient.PublicNetworksApi.PublicNetworksNetworkIdIpBlocksIpBlockIdDelete(context.Background(), l.network, blocks[0].Id).Execute(); err != nil {
-						klog.Errorf("unable to unassign IP block %s from network %s: %w", blocks[0].Id, l.network, err)
+						klog.Errorf("unable to unassign IP block %s from network %s: %v", blocks[0].Id, l.network, err)
 					}
 				}
 			}
@@ -182,7 +182,7 @@ func (l *loadBalancers) GetLoadBalancer(ctx context.Context, clusterName string,
 		return nil, false, fmt.Errorf("block %s has no assigned resource ID", block.Cidr)
 	}
 	if *block.AssignedResourceId != l.network {
-		klog.V(2).Infof("block %s is assigned to network %s instead of expected %s", block.Cidr, block.AssignedResourceId, l.network)
+		klog.V(2).Infof("block %s is assigned to network %s instead of expected %s", block.Cidr, *block.AssignedResourceId, l.network)
 		return nil, false, fmt.Errorf("block %s is assigned to network %s instead of expected %s", block.Cidr, *block.AssignedResourceId, l.network)
 	}
 

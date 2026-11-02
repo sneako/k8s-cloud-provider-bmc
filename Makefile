@@ -1,7 +1,7 @@
 SHELL=/bin/sh
 BINARY ?= cloud-provider-phoenixnap
 BUILD_IMAGE?=phoenixnap/cloud-provider-phoenixnap
-BUILDER_IMAGE?=golang:1.17-alpine3.15
+BUILDER_IMAGE?=golang:1.26-alpine
 PACKAGE_NAME?=github.com/phoenixnap/k8s-cloud-provider-bmc
 GIT_VERSION?=$(shell git log -1 --format="%h")
 VERSION?=$(GIT_VERSION)
@@ -95,7 +95,7 @@ fmt: golangci-lint  ## Format all source code files
 
 golangci-lint: $(LINTER)
 $(LINTER):
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.44.2
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
 lint: golangci-lint ## Lint the files
 	@$(BUILD_CMD) $(LINTER) run ./

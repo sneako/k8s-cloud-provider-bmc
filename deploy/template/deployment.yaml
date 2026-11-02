@@ -15,9 +15,8 @@ spec:
     metadata:
       labels:
         app: cloud-provider-phoenixnap
-      annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      priorityClassName: system-cluster-critical
       dnsPolicy: Default
       hostNetwork: true
       serviceAccountName: cloud-controller-manager
@@ -152,6 +151,15 @@ rules:
   - watch
   - update
   - patch
+- apiGroups:
+  # reason: so ccm can do leader election when --leader-elect=true
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+  - get
+  - update
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
