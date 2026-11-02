@@ -3,14 +3,13 @@ package main
 import (
 	goflag "flag"
 	"fmt"
-	"math/rand"
 	"os"
-	"time"
 
 	"k8s.io/apimachinery/pkg/util/wait"
 	cloudprovider "k8s.io/cloud-provider"
 	"k8s.io/cloud-provider/app"
 	cloudcontrollerconfig "k8s.io/cloud-provider/app/config"
+	"k8s.io/cloud-provider/names"
 	"k8s.io/cloud-provider/options"
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/component-base/logs"
@@ -23,24 +22,22 @@ import (
 )
 
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
-
 	opts, err := options.NewCloudControllerManagerOptions()
-	opts.KubeCloudShared.CloudProvider.Name = phoenixnap.ProviderName
-
 	if err != nil {
 		klog.Fatalf("unable to initialize command options: %v", err)
 	}
+	opts.KubeCloudShared.CloudProvider.Name = phoenixnap.ProviderName
+
 	controllerInitializers := app.DefaultInitFuncConstructors
 	// remove unneeded controllers
-	delete(controllerInitializers, "route")
+	delete(controllerInitializers, names.NodeRouteController)
 	fss := cliflag.NamedFlagSets{
 		NormalizeNameFunc: cliflag.WordSepNormalizeFunc,
 	}
 	pflag.CommandLine.SetNormalizeFunc(cliflag.WordSepNormalizeFunc)
 	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 
-	command := app.NewCloudControllerManagerCommand(opts, cloudInitializer, controllerInitializers, fss, wait.NeverStop)
+	command := app.NewCloudControllerManagerCommand(opts, cloudInitializer, controllerInitializers, names.CCMControllerAliases(), fss, wait.NeverStop)
 
 	logs.InitLogs()
 	defer logs.FlushLogs()
